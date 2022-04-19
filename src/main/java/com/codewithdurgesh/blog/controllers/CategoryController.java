@@ -2,6 +2,8 @@ package com.codewithdurgesh.blog.controllers;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,17 +29,17 @@ public class CategoryController {
 	CategoryService catService;
 	//create
 	@PostMapping("/")
-	public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryDto catDto) {
+	public ResponseEntity<CategoryDto> createCategory(@Valid @RequestBody CategoryDto catDto) {
 		CategoryDto cretedCategory=catService.createCategory(catDto);
 		return new ResponseEntity<CategoryDto>(cretedCategory, HttpStatus.CREATED);
 	}
 	//update
 		@PutMapping("/{id}")
-		public ResponseEntity<CategoryDto> updateCategory(@RequestBody CategoryDto catDto,@ PathVariable Integer id) {
+		public ResponseEntity<CategoryDto> updateCategory(@Valid @RequestBody CategoryDto catDto,@ PathVariable Integer id) {
 			CategoryDto cretedCategory=catService.updateCategory(catDto,id);
 			return new ResponseEntity<CategoryDto>(cretedCategory, HttpStatus.OK);
 		}
-		//update
+		//delete
 				@DeleteMapping("/{id}")
 				public ResponseEntity<ApiResponse> deleteCategory(@ PathVariable Integer id) {
 					catService.deleteCategory(id);
