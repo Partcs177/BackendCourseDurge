@@ -26,7 +26,7 @@ import lombok.Setter;
 public class Post {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private Integer Id;
 	@Column(name="post_title", length=100,nullable = false)
 	private String title;
 	@Column( length=10000)
