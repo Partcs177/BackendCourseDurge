@@ -26,6 +26,7 @@ import com.codewithdurgesh.blog.services.PostService;
 public class PostController {
 	@Autowired
 	PostService postservice;
+	private List<PostDto> searchPost;
 	//create
 	@PostMapping("/user/{userId}/category/{categoryId}/posts")
 	ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto, @PathVariable Integer userId,
@@ -79,6 +80,13 @@ public class PostController {
 		public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable Integer postId) {
 			PostDto updatedPost=this.postservice.updatePost(postDto, postId);
 			return new ResponseEntity<PostDto>(updatedPost, HttpStatus.OK);
+			
+		}
+	//search
+		@GetMapping("/posts/search/{keywords}")
+		public ResponseEntity<List<PostDto>> searchPostByTitle(@PathVariable("keywords") String keywords){
+			List<PostDto> result = this.postservice.searchPost(keywords);
+			return new ResponseEntity<List<PostDto>>(result,HttpStatus.OK);
 			
 		}
 		
