@@ -2,6 +2,7 @@ package com.codewithdurgesh.blog.services;
 
 import java.util.List;
 import com.codewithdurgesh.blog.payloads.PostDto;
+import com.codewithdurgesh.blog.payloads.PostResponse;
 
 public interface PostService {
 	//create
@@ -14,7 +15,7 @@ public interface PostService {
 	void deletePost(Integer postId);
 	
 	//list of post
-	List<PostDto> getAllPost();
+	PostResponse getAllPost(Integer pageNumber, Integer pageSize);
 	//get single post
 	PostDto getPost(Integer postId);
 	//list of posts by category
