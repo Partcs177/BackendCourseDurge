@@ -1,7 +1,10 @@
 package com.codewithdurgesh.blog.entities;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -38,4 +41,7 @@ public class Post {
 	private Category category;
 	@ManyToOne
 	private User user;
+	
+	@OneToMany(mappedBy = "post",cascade=CascadeType.ALL)
+	private Set<Comment> comments=new HashSet<>();
 }
