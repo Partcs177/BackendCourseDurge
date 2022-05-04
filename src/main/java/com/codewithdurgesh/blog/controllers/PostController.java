@@ -1,10 +1,17 @@
 package com.codewithdurgesh.blog.controllers;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,12 +21,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.codewithdurgesh.blog.config.AppConstants;
 import com.codewithdurgesh.blog.entities.Post;
 import com.codewithdurgesh.blog.payloads.ApiResponse;
 import com.codewithdurgesh.blog.payloads.PostDto;
 import com.codewithdurgesh.blog.payloads.PostResponse;
+import com.codewithdurgesh.blog.services.FileService;
 import com.codewithdurgesh.blog.services.PostService;
 
 @RestController
@@ -27,7 +36,11 @@ import com.codewithdurgesh.blog.services.PostService;
 public class PostController {
 	@Autowired
 	PostService postservice;
-	private List<PostDto> searchPost;
+	@Autowired
+	FileService fileService;
+	@Value("${project.image}")
+	String path;
+	private PostDto post;
 	//create
 	@PostMapping("/user/{userId}/category/{categoryId}/posts")
 	ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto, @PathVariable Integer userId,
@@ -87,8 +100,28 @@ public class PostController {
 		@GetMapping("/posts/search/{keywords}")
 		public ResponseEntity<List<PostDto>> searchPostByTitle(@PathVariable("keywords") String keywords){
 			List<PostDto> result = this.postservice.searchPost(keywords);
-			return new ResponseEntity<List<PostDto>>(result,HttpStatus.OK);
-			
+			return new ResponseEntity<List<PostDto>>(result,HttpStatus.OK);	
 		}
+	//Post Image Upload
+		@PostMapping("/post/image/upload/{postId}")
+		public ResponseEntity<PostDto> uploadPostImage (@RequestParam("image") MultipartFile image,
+				@PathVariable Integer postId) throws IOException{
+			PostDto postDto = this.postservice.getPost(postId);
+			String fileName = this.fileService.uploadFile (path, image);
+			 
+			 postDto.setImageName(fileName);
+			 PostDto updatePost = this.postservice.updatePost(postDto, postId);
+			 return new ResponseEntity<PostDto>(updatePost, HttpStatus.OK);
+		}
+		@GetMapping(value="/post/image/{imageName}",produces=MediaType.IMAGE_JPEG_VALUE)
+		public void downloadImage(
+				@PathVariable("imageNmae") String imageName,
+				HttpServletResponse response
+				) throws IOException {
+			InputStream resource=this.fileService.getResource(path, imageName);
+			response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+			StreamUtils.copy(resource, response.getOutputStream());
+		}
+		   
 		
 }
